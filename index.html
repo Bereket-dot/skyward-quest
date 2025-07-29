@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyward Quest - Realistic 2.5D Platformer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <audio id="bg-music" loop>
+        <source src="http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/theme_01.mp3" type="audio/mpeg">
+    </audio>
+        <div id="game-container">
+        <canvas id="parallax-canvas"></canvas>
+        <canvas id="background-canvas"></canvas>
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="main-menu" class="screen">
+            <h1 class="title">SKYWARD QUEST</h1>
+            <p class="subtitle">Embark on an epic journey through floating islands. Collect gems, defeat enemies, and unlock ancient secrets!</p>
+            <div class="menu">
+                <button id="start-btn" class="btn"><i class="fas fa-play"></i> START ADVENTURE</button>
+                <button id="settings-btn" class="btn btn-secondary"><i class="fas fa-cog"></i> SETTINGS</button>
+                <button id="help-btn" class="btn btn-secondary"><i class="fas fa-question-circle"></i> HOW TO PLAY</button>
+                <button id="credits-btn" class="btn btn-secondary"><i class="fas fa-star"></i> CREDITS</button>
+            </div>
+        </div>
+        
+        <div id="settings-screen" class="screen hidden">
+            <h1 class="title">SETTINGS</h1>
+            <div class="options">
+                <div class="setting">
+                    <label for="music-volume">Music Volume:</label>
+                    <input type="range" id="music-volume" class="slider" min="0" max="100" value="70">
+                </div>
+                <div class="setting">
+                    <label for="sfx-volume">SFX Volume:</label>
+                    <input type="range" id="sfx-volume" class="slider" min="0" max="100" value="90">
+                </div>
+                <div class="setting">
+                    <label for="difficulty">Difficulty:</label>
+                    <select id="difficulty" class="slider" style="width: 100%; padding: 10px; border-radius: 8px; background: var(--dark); color: white; border: 1px solid var(--primary); font-size: 1.1rem;">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+            <div class="menu">
+                <button id="settings-back" class="btn"><i class="fas fa-arrow-left"></i> BACK TO MENU</button>
+            </div>
+        </div>
+        
+        <div id="help-screen" class="screen hidden">
+            <h1 class="title">HOW TO PLAY</h1>
+            <div class="help-content">
+                <h3>Objective</h3>
+                <p>Navigate through floating islands, collect gems, defeat enemies, and reach the end of each level.</p>
+                
+                <h3>Controls</h3>
+                <p><span class="key">W</span> or <span class="key">↑</span> - Jump</p>
+                <p><span class="key">A</span> or <span class="key">←</span> - Move Left</p>
+                <p><span class="key">D</span> or <span class="key">→</span> - Move Right</p>
+                <p><span class="key">SPACE</span> - Attack</p>
+                <p><span class="key">P</span> - Pause Game</p>
+                <p><span class="key">M</span> - Toggle Mute</p>
+                
+                <h3>Game Elements</h3>
+                <p><i class="fas fa-gem" style="color: #4bcefa;"></i> Gems - Collect for points</p>
+                <p><i class="fas fa-heart" style="color: var(--danger);"></i> Health - Restore health</p>
+                <p><i class="fas fa-lock" style="color: var(--warning);"></i> Locked Door - Requires key to open</p>
+                <p><i class="fas fa-key" style="color: var(--accent);"></i> Key - Unlocks doors</p>
+                <p><i class="fas fa-fire" style="color: var(--warning);"></i> Enemies - Avoid or defeat</p>
+            </div>
+            <div class="menu" style="margin-top: 30px;">
+                <button id="help-back" class="btn"><i class="fas fa-arrow-left"></i> BACK TO MENU</button>
+            </div>
+        </div>
+        
+        <div id="credits-screen" class="screen hidden">
+            <h1 class="title">CREDITS</h1>
+            <div class="credits">
+                <h2>Game Development</h2>
+                <p>Designed and Developed by Skyward Studios</p>
+                
+                <h2>Special Thanks</h2>
+                <p>To the open source community for inspiration and resources</p>
+                <p>To all playtesters for valuable feedback</p>
+                
+                <h2>Technologies Used</h2>
+                <p>HTML5 Canvas - Vanilla JavaScript - CSS3</p>
+            </div>
+            <div class="menu" style="margin-top: 30px;">
+                <button id="credits-back" class="btn"><i class="fas fa-arrow-left"></i> BACK TO MENU</button>
+            </div>
+        </div>
+        
+        <div class="hud">
+            <div class="hud-item">
+                <i class="fas fa-heart"></i>
+                <div class="health-bar">
+                    <div id="health-fill" class="health-fill" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="hud-item">
+                <i class="fas fa-gem"></i>
+                <span id="score">0</span>
+            </div>
+            <div class="hud-item">
+                <i class="fas fa-key"></i>
+                <span id="keys">0</span>
+            </div>
+        </div>
+        
+        <div class="level-indicator">
+            Level <span id="level-display">1</span> - <span id="level-name-display">Floating Gardens</span>
+        </div>
+        
+        <div class="mini-map">
+            <canvas id="mini-map-canvas" class="mini-map-canvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-btn" id="pause-btn">
+                <i class="fas fa-pause"></i>
+            </div>
+            <div class="control-btn" id="mute-btn">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <div class="control-btn" id="menu-btn">
+                <i class="fas fa-home"></i>
+            </div>
+        </div>
+        
+        <div class="mobile-controls">
+            <div class="d-pad">
+                <div class="d-pad-btn up"><i class="fas fa-arrow-up"></i></div>
+                <div class="d-pad-btn left"><i class="fas fa-arrow-left"></i></div>
+                <div class="d-pad-btn right"><i class="fas fa-arrow-right"></i></div>
+                <div class="d-pad-btn down"><i class="fas fa-arrow-down"></i></div>
+            </div>
+            <div class="action-buttons">
+                <div class="action-btn jump"><i class="fas fa-arrow-up"></i></div>
+                <div class="action-btn attack"><i class="fas fa-bolt"></i></div>
+            </div>
+        </div>
+        
+        <div id="game-over" class="game-over">
+            <h1 class="title">GAME OVER</h1>
+            <p class="subtitle">You collected <span id="final-score">0</span> gems!</p>
+            <div class="menu">
+                <button id="restart-btn" class="btn"><i class="fas fa-redo"></i> PLAY AGAIN</button>
+                <button id="menu-btn" class="btn btn-secondary"><i class="fas fa-home"></i> MAIN MENU</button>
+            </div>
+        </div>
+        
+        <div id="level-complete" class="level-complete">
+            <h1 class="title">LEVEL COMPLETE!</h1>
+            <p class="subtitle">You unlocked the next challenge!</p>
+            <div class="menu">
+                <button id="next-level-btn" class="btn"><i class="fas fa-forward"></i> NEXT LEVEL</button>
+                <button id="level-menu-btn" class="btn btn-secondary"><i class="fas fa-home"></i> MAIN MENU</button>
+            </div>
+        </div>
+        
+        <div id="level-transition" class="level-transition">
+            <div class="level-name" id="level-name">Level 1</div>
+            <div>Get Ready!</div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
